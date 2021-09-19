@@ -9,9 +9,11 @@ node {
             dotnet_build();
         }
         stage('Docker') {
+            steps {
                 bat(script: 'docker login --username %UsernameDockerHub% --password %PasswordDocker%', returnStdout: true);
                 bat(script: 'docker build -t franklynvidal/servicenet5 .', returnStdout: true);
-                bat(script: 'docker push franklynvidal/servicenet5', returnStdout: true);            
+                bat(script: 'docker push franklynvidal/servicenet5', returnStdout: true);
+            }
         }
         stage('Deploy Dev') {
             steps {
