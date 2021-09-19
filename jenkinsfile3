@@ -3,17 +3,15 @@ import groovy.json.JsonSlurper
 node {
     ws('netcore') {
         stage('SCM') {
-            git branch: 'main', url: 'https://github.com/FranklynVidal/netcore50-api-test.git'           
+            git branch: 'main', url: 'https://github.com/FranklynVidal/netcore50-api-test'           
         }
         stage('Build') {
             dotnet_build();
         }
         stage('Docker') {
-            steps {
-                bat(script: 'docker login --username %UsernameDockerHub% --password %PasswordDocker%', returnStdout: true);
-                bat(script: 'docker build -t franklynvidal/servicenet5 .', returnStdout: true);
-                bat(script: 'docker push franklynvidal/servicenet5', returnStdout: true);
-            }
+             // bat(script: 'docker login --username %UsernameDockerHub% --password %PasswordDocker%', returnStdout: true);
+              bat(script: 'docker build -t franklynvidal/servicenet5 .', returnStdout: true);
+              bat(script: 'docker push franklynvidal/servicenet5', returnStdout: true);            
         }
         stage('Deploy Dev') {
             steps {
@@ -26,7 +24,7 @@ node {
         }
         stage('Deploy AKS') {
             steps {
-                //bat(script: 'az aks get-credentials --resource-group aforo255Devops --name aforo255jenkins & kubectl config get-contexts --kubeconfig=%KUBE_PATH_CONFIG%', returnStdout: true);
+               //bat(script: 'az aks get-credentials --resource-group aforo255Devops --name aforo255jenkins & kubectl config get-contexts --kubeconfig=%KUBE_PATH_CONFIG%', returnStdout: true);
                 bat(script: 'az aks get-credentials --resource-group DEVOPS_SEP --name aksdevops & kubectl config get-contexts --kubeconfig=%KUBE_PATH_CONFIG%', returnStdout: true);
                 bat(script: 'kubectl config use-context aksdevops --kubeconfig=%KUBE_PATH_CONFIG%', returnStdout: true);
                 bat(script: 'kubectl delete --all pods --kubeconfig=%KUBE_PATH_CONFIG% & kubectl apply -f k8s.yml --kubeconfig=%KUBE_PATH_CONFIG%', returnStdout: true);
